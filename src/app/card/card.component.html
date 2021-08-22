@@ -1,0 +1,21 @@
+<ul class="nav nav-tabs" role="tablist">
+  <li *ngFor="let item of tabsArr" class="nav-item">
+    <a (click)="handleTabClick(item)" [class.active]="activeTab == item" class="nav-link" data-toggle="tab">{{item}}</a>
+  </li>
+</ul>
+<div class="tab-content">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Account</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of usersWithType">
+        <td>{{item.name.first + ' ' + item.name.last}}</td>
+        <td>{{item.amount.toFixed(0)}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
