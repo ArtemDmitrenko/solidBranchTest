@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import json from '../../assets/database.json';
+import { UserService } from '../user/user.service';
 
 @Component({
   selector: 'app-card',
@@ -9,11 +9,18 @@ import json from '../../assets/database.json';
 
 export class CardComponent implements OnInit {
   usersWithType: any;
-  tabsArr: any;
   activeTab!: string;
+  public users: any;
+  public tabsArr!: string[];
+
+  constructor(private _userService: UserService) {
+  } 
 
   ngOnInit() {
-    this.tabsArr = this.unique(json.data);
+    // this._userService.getAll().subscribe((users: any) => this.users = users.data);
+    // console.log(this.users)
+    this.users = this._userService.getAll()
+    this.tabsArr = this.unique(this.users.data);
     this.activeTab = this.tabsArr[0];
     this.setArrays();
   }
@@ -24,7 +31,7 @@ export class CardComponent implements OnInit {
   }
 
   filterArr(type: string): any {
-    return json.data.filter(item => item.type == type);
+    return this.users.data.filter((item: { type: string; }) => item.type == type);
   }
 
   handleTabClick(tab: string): void {
