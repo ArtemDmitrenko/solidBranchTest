@@ -1,6 +1,6 @@
 <ul class="nav nav-tabs" role="tablist">
-  <li *ngFor="let item of tabsArr" class="nav-item">
-    <a (click)="handleTabClick(item)" [class.active]="activeTab == item" class="nav-link" data-toggle="tab">{{item}}</a>
+  <li *ngFor="let item of tabsArr; let i = index" class="nav-item">
+    <a [routerLink]="['navigator']" [queryParams]="{'tab': i}" (click)="handleTabClick(item, i)" [class.active]="activeTab == item" class="nav-link" data-toggle="tab">{{item}}</a>
   </li>
 </ul>
 <div class="tab-content">

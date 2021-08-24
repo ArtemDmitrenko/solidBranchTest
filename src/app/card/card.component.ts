@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import { UserService } from '../user/user.service';
+import { ActivatedRoute} from '@angular/router';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-card',
@@ -14,9 +16,21 @@ export class CardComponent implements OnInit {
   public usersWithType: any;
   public activeTab!: string;
   public tabsArr!: string[];
+  public id: number = 0;
+  tab: any;
+
+  private routeSubscription: Subscription;
+  private querySubscription: Subscription;
 
 
-  constructor(private userService: UserService) {} 
+  constructor(private userService: UserService, private activateRoute: ActivatedRoute) {
+    this.routeSubscription = activateRoute.params.subscribe(params=>this.id=params['id']);
+        this.querySubscription = activateRoute.queryParams.subscribe(
+            (queryParam: any) => {
+                this.tab = queryParam['tab'];
+            }
+        );
+  } 
 
   public ngOnInit() {
     this.userService.getData().subscribe((data: any) => this.setView(data))
@@ -29,7 +43,7 @@ export class CardComponent implements OnInit {
     this.usersWithType = this.userService.setArrays(this.activeTab, this.userService, this.users);
   }
 
-  public handleTabClick(tab: string): void {
+  public handleTabClick(tab: string, index: number): void {
     this.activeTab = tab;
     this.usersWithType = this.userService.filterArr(this.users, tab[0].toLowerCase() + tab.slice(1));
   }

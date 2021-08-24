@@ -15,7 +15,6 @@ export class UserService {
   }
 
   public unique(arr: any): any {
-    console.log(arr);
     let result: any = [];
     for (let item of arr) {
       if (!result.includes(item.type)) {
