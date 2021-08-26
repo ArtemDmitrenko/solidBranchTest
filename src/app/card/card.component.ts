@@ -1,7 +1,21 @@
 import {Component, OnInit} from '@angular/core';
 import { UserService } from '../user/user.service';
-import { ActivatedRoute} from '@angular/router';
-import {Subscription} from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import {Subscription } from 'rxjs';
+
+export interface IUser {
+  type: 'income' | 'outcome' | 'loan' | 'investment';
+  _id: string;
+  amount: number;
+  name: {
+    first: string;
+    last: string;
+  };
+  company: string;
+  email: string;
+  phone: string;
+  address: string;
+};
 
 @Component({
   selector: 'app-card',
@@ -10,41 +24,40 @@ import {Subscription} from 'rxjs';
   providers: [UserService]
 })
 
+
+
 export class CardComponent implements OnInit {
 
-  private users: any;
-  public usersWithType: any;
-  public activeTab!: string;
-  public tabsArr!: string[];
-  public id: number = 0;
-  tab: any;
-
-  private routeSubscription: Subscription;
+  private users: IUser[] = [];
+  public usersWithType: IUser[] = [];
+  public activeTab: string = '';
+  public tabsNameArr: string[] = [];
+  private tab!: number;
   private querySubscription: Subscription;
 
-
-  constructor(private userService: UserService, private activateRoute: ActivatedRoute) {
-    this.routeSubscription = activateRoute.params.subscribe(params=>this.id=params['id']);
-        this.querySubscription = activateRoute.queryParams.subscribe(
-            (queryParam: any) => {
-                this.tab = queryParam['tab'];
-            }
-        );
+  constructor(private userService: UserService, private route: ActivatedRoute) {
+    this.querySubscription = route.queryParams.subscribe(
+        (queryParam: any) => {
+            this.tab = queryParam['tab'];
+        }
+    );
   } 
 
   public ngOnInit() {
     this.userService.getData().subscribe((data: any) => this.setView(data))
+
   }
 
   private setView(data: any) {
-    this.users = data["data"];
-    this.tabsArr = this.userService.unique(this.users);
-    this.activeTab = this.tabsArr[0];
+    this.users = data;
+    this.tabsNameArr = this.userService.unique(this.users);
+    this.tab = this.tab ? this.tab : 0;
+    this.activeTab = this.tabsNameArr[this.tab];
     this.usersWithType = this.userService.setArrays(this.activeTab, this.userService, this.users);
   }
 
-  public handleTabClick(tab: string, index: number): void {
+  public handleTabClick(tab: string): void {
     this.activeTab = tab;
-    this.usersWithType = this.userService.filterArr(this.users, tab[0].toLowerCase() + tab.slice(1));
+    this.userService.getListOfTabItems(this.tab, this.tabsNameArr).subscribe((data: IUser[]) => this.usersWithType = data);
   }
 }
