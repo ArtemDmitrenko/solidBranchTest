@@ -25,39 +25,55 @@ export interface IUser {
 })
 
 
-
 export class CardComponent implements OnInit {
 
-  private users: IUser[] = [];
-  public usersWithType: IUser[] = [];
-  public activeTab: string = '';
+  public usersWithDefType: IUser[] = [];
+  public tabsNameArrForView: string[] = [];
   public tabsNameArr: string[] = [];
-  private tab!: number;
+  public tabID!: number;
+  error: any;
   private querySubscription: Subscription;
 
   constructor(private userService: UserService, private route: ActivatedRoute) {
     this.querySubscription = route.queryParams.subscribe(
         (queryParam: any) => {
-            this.tab = queryParam['tab'];
+            this.tabID = queryParam['tab'];
         }
     );
   } 
 
   public ngOnInit() {
-    this.userService.getData().subscribe((data: any) => this.setView(data))
-
+    this.userService.getData().subscribe(
+      (data: any) => this.setView(data),
+      error => {this.error = error.message; console.log(error);}
+    );
   }
 
-  private setView(data: any) {
-    this.users = data;
-    this.tabsNameArr = this.userService.unique(this.users);
-    this.tab = this.tab ? this.tab : 0;
-    this.activeTab = this.tabsNameArr[this.tab];
-    this.usersWithType = this.userService.setArrays(this.activeTab, this.userService, this.users);
+  private setView(data: IUser[]): void {
+    this.tabsNameArr = this.userService.uniqueTypes(data);
+    this.tabsNameArrForView = this.setTabNamesForView(this.tabsNameArr);    
+    this.tabID = this.tabID ? this.tabID : 0;
+    this.usersWithDefType = this.userService.filterArr(data, this.tabsNameArr[this.tabID]);
   }
 
-  public handleTabClick(tab: string): void {
-    this.activeTab = tab;
-    this.userService.getListOfTabItems(this.tab, this.tabsNameArr).subscribe((data: IUser[]) => this.usersWithType = data);
+  public handleTabClick(index: number): void {
+    this.tabID = index;    
+    this.userService.getListOfTabItems(this.tabID, this.tabsNameArr).subscribe(
+      (data: IUser[]) => this.usersWithDefType = data,
+      error => {this.error = error.message; console.log(error);}
+    );
+  }
+
+  private setTabNamesForView(arr: string[]): string[] {
+    const setTabNamesForView = arr.map((item: string) => item[0].toUpperCase() + item.slice(1));
+    const indexInvest = setTabNamesForView.indexOf('Investment');
+    if (indexInvest !== -1) {
+      setTabNamesForView[indexInvest] = 'Investments';
+    }
+    const indexLoan = setTabNamesForView.indexOf('Loan');
+    if (indexLoan !== -1) {
+      setTabNamesForView[indexLoan] = 'Loans';
+    }    
+    return setTabNamesForView;
   }
 }
