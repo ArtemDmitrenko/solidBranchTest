@@ -1,6 +1,8 @@
 <ul class="card__nav nav nav-tabs" role="tablist">
-  <li *ngFor="let item of tabsNameArrForView; let i = index" class="card__nav-item nav-item">
-    <a [routerLink]="['navigator']" [queryParams]="{'tab': i}" (click)="handleTabClick(i)" [class.active]="tabID == i" class="card__nav-link nav-link" data-toggle="tab">{{item}}</a>
+  <li [ngSwitch]="item" *ngFor="let item of tabsNameArrForView; let i = index" class="card__nav-item nav-item">
+    <a *ngSwitchCase="'Investment'" [routerLink]="['navigator']" [queryParams]="{'tab': i}" (click)="handleTabClick(i)" [class.active]="tabID == i" class="card__nav-link nav-link" data-toggle="tab">{{item+'s'}}</a>
+    <a *ngSwitchCase="'Loan'" [routerLink]="['navigator']" [queryParams]="{'tab': i}" (click)="handleTabClick(i)" [class.active]="tabID == i" class="card__nav-link nav-link" data-toggle="tab">{{item+'s'}}</a>
+    <a *ngSwitchDefault [routerLink]="['navigator']" [queryParams]="{'tab': i}" (click)="handleTabClick(i)" [class.active]="tabID == i" class="card__nav-link nav-link" data-toggle="tab">{{item}}</a>
   </li>
 </ul>
 <div class="card__content tab-content">

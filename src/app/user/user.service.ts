@@ -23,16 +23,6 @@ export class UserService {
     }));
   }
 
-  public getListOfTabItems(id: number, tabNameArr: string[]) {
-    return this.http.get('../../assets/database.json').pipe(map((data: any) => {
-      return this.filterArr(data["data"], tabNameArr[id]);
-    }),
-    catchError(err => {
-      console.log(err);
-      return throwError(err)
-    }));
-  }
-
   public uniqueTypes(arr: IUser[]): string[] {
     let result: string[] = [];
     for (let item of arr) {
